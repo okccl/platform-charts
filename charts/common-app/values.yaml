@@ -1,0 +1,54 @@
+# アプリ基本設定
+app:
+  name: ""
+  version: "latest"
+
+# コンテナイメージ
+image:
+  repository: ""
+  tag: ""
+  pullPolicy: IfNotPresent
+
+# レプリカ数
+replicaCount: 1
+
+# コンテナポート
+containerPort: 8080
+
+# リソース制限（安全なデフォルト）
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+# ヘルスチェック
+probes:
+  liveness:
+    path: /healthz
+    initialDelaySeconds: 10
+    periodSeconds: 10
+  readiness:
+    path: /readyz
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Ingress設定
+ingress:
+  enabled: false
+  host: ""
+
+# HPA設定
+hpa:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+
+# Prometheus監視設定
+serviceMonitor:
+  enabled: false
+  path: /metrics
+  interval: 30s

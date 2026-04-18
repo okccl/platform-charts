@@ -1,0 +1,9 @@
+{{ include "common-app.deployment" . }}
+---
+{{ include "common-app.service" . }}
+---
+{{ include "common-app.ingress" . }}
+---
+{{ include "common-app.hpa" . }}
+---
+{{ include "common-app.serviceMonitor" . }}

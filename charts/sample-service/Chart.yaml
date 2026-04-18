@@ -1,0 +1,9 @@
+apiVersion: v2
+name: sample-service
+description: サンプルアプリ（common-appライブラリを利用）
+type: application
+version: 0.1.0
+dependencies:
+  - name: common-app
+    version: "0.1.0"
+    repository: "file://../common-app"

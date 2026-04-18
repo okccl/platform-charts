@@ -1,0 +1,2 @@
+# Helmの依存関係パッケージ（helm dependency buildで再生成可能）
+charts/*/charts/*.tgz
