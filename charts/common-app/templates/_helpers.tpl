@@ -17,6 +17,10 @@ spec:
         app.kubernetes.io/name: {{ .Values.app.name }}
         app.kubernetes.io/version: {{ .Values.app.version }}
     spec:
+      {{- if .Values.image.pullSecretName }}
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecretName }}
+      {{- end }}
       containers:
         - name: {{ .Values.app.name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -38,7 +42,6 @@ spec:
             initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
             periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
 {{- end }}
-
 {{- define "common-app.service" -}}
 apiVersion: v1
 kind: Service
@@ -54,7 +57,6 @@ spec:
       port: 80
       targetPort: {{ .Values.containerPort }}
 {{- end }}
-
 {{- define "common-app.ingress" -}}
 {{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
@@ -82,7 +84,6 @@ spec:
                   number: 80
 {{- end }}
 {{- end }}
-
 {{- define "common-app.hpa" -}}
 {{- if .Values.hpa.enabled }}
 apiVersion: autoscaling/v2
@@ -105,7 +106,6 @@ spec:
           averageUtilization: {{ .Values.hpa.targetCPUUtilizationPercentage }}
 {{- end }}
 {{- end }}
-
 {{- define "common-app.serviceMonitor" -}}
 {{- if .Values.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
