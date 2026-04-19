@@ -52,3 +52,7 @@ serviceMonitor:
   enabled: false
   path: /metrics
   interval: 30s
+
+# DB接続設定（common-dbと組み合わせて使用する場合のみ設定）
+db:
+  name: ""
