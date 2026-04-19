@@ -69,6 +69,11 @@ spec:
           {{- if .Values.env }}
           {{- toYaml .Values.env | nindent 12 }}
           {{- end }}
+          lifecycle:
+            preStop:
+              exec:
+                # Endpoints除外の伝搬を待ってからシャットダウン開始
+                command: ["/bin/sh", "-c", "sleep 5"]
           livenessProbe:
             httpGet:
               path: {{ .Values.probes.liveness.path }}
