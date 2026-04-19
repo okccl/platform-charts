@@ -1,0 +1,28 @@
+db:
+  # DB名（アプリ名と合わせることを推奨）
+  name: ""
+  # PostgreSQLインスタンス数（1=シングル、2以上=HA構成）
+  instances: 1
+  # PostgreSQLバージョン
+  postgresVersion: 17
+  # ストレージサイズ
+  storageSize: 1Gi
+  # DB初期化設定
+  database: app
+  owner: app
+  # バックアップ設定
+  backup:
+    enabled: false
+    # MinIOのエンドポイント（cluster内部DNS）
+    endpointURL: "http://minio.minio.svc.cluster.local:9000"
+    bucketName: "cnpg-backup"
+    # MinIO認証情報を持つSecretの名前
+    secretName: "minio-backup-secret"
+  # リソース設定
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
