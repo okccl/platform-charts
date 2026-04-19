@@ -57,6 +57,9 @@ spec:
                   name: {{ .Values.db.name }}-app
                   key: password
           {{- end }}
+          {{- if .Values.env }}
+          {{- toYaml .Values.env | nindent 12 }}
+          {{- end }}
           livenessProbe:
             httpGet:
               path: {{ .Values.probes.liveness.path }}
