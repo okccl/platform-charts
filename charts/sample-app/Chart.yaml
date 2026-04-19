@@ -1,6 +1,6 @@
 apiVersion: v2
-name: sample-backend
-description: サンプルバックエンドアプリ（common-app / common-db ライブラリを利用）
+name: sample-app
+description: サンプルアプリ（backend）（common-app / common-db ライブラリを利用）
 type: application
 version: 0.1.0
 dependencies:
