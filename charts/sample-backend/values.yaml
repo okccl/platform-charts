@@ -35,3 +35,19 @@ serviceMonitor:
   enabled: true
   path: /metrics
   interval: 30s
+db:
+  name: sample-backend-db
+  instances: 1
+  postgresVersion: 17
+  storageSize: 1Gi
+  database: app
+  owner: app
+  backup:
+    enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

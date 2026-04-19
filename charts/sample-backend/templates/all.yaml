@@ -7,3 +7,7 @@
 {{ include "common-app.hpa" . }}
 ---
 {{ include "common-app.serviceMonitor" . }}
+---
+{{ include "common-db.cluster" . }}
+---
+{{ include "common-db.scheduledBackup" . }}
