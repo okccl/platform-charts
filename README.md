@@ -16,6 +16,7 @@ Platform Engineering portfolio — Helm Library Chart リポジトリ
 |-------|------|
 | Phase 5 | Library Chart（`common-app`）による Helm テンプレートの共通化。アプリ Chart は `values.yaml` のみを管理すればよい |
 | Phase 8 | Library Chart（`common-db`）によるステートフルな PostgreSQL（CloudNativePG）のプロビジョニング抽象化 |
+| Phase 11 | `common-app` v0.2.0 で Argo Rollouts の `Rollout` リソースに対応。`rollout.enabled: true` でカナリア戦略に切り替え可能 |
 
 ## ディレクトリ構成
 
@@ -23,10 +24,10 @@ Platform Engineering portfolio — Helm Library Chart リポジトリ
 platform-charts/
 └── charts/
     ├── common-app/               # Library Chart（アプリ共通）
-    │   ├── Chart.yaml
+    │   ├── Chart.yaml            # v0.3.0
     │   ├── values.yaml           # デフォルト値
     │   └── templates/
-    │       └── _helpers.tpl      # Deployment / Service / Ingress / HPA / ServiceMonitor を生成
+    │       └── _helpers.tpl      # Deployment / Rollout / Service / Ingress / HPA / ServiceMonitor を生成
     ├── common-db/                # Library Chart（PostgreSQL 共通）
     │   ├── Chart.yaml
     │   ├── values.yaml           # デフォルト値
@@ -37,7 +38,7 @@ platform-charts/
     │   ├── Chart.lock
     │   ├── values.yaml
     │   └── templates/
-    │       └── all.yaml          # Library Chart のヘルパーを呼び出すだけ
+    │       └── all.yaml          # rollout.enabled フラグで Deployment / Rollout を切り替え
     └── sample-frontend/          # common-app を使うアプリ Chart の例
 ```
 
@@ -49,8 +50,9 @@ platform-charts/
 
 | リソース | 生成条件 |
 |---|---|
-| `Deployment` | 常に生成 |
-| `Service` | 常に生成 |
+| `Deployment` | `rollout.enabled: false`（デフォルト） |
+| `Rollout`（Argo Rollouts） | `rollout.enabled: true` |
+| `Service` | 常に生成（`name: http` ポート名付き） |
 | `Ingress` | `ingress.enabled: true` |
 | `HorizontalPodAutoscaler` | `hpa.enabled: true` |
 | `ServiceMonitor` | `serviceMonitor.enabled: true`（Prometheus 自動収集） |
@@ -71,17 +73,20 @@ resources:
 probes:
   liveness:  { path: /health }
   readiness: { path: /health }
-ingress:
-  enabled: true
-  host: sample-backend.localhost
 serviceMonitor:
   enabled: true
   path: /metrics
   interval: 30s
+rollout:
+  enabled: true
+  canary:
+    steps:
+      - setWeight: 20
+      - pause: {}
+      - setWeight: 100
 ```
 
-この `values.yaml` だけで Deployment / Service / Ingress / ServiceMonitor が揃う。  
-アプリ開発者が Kubernetes マニフェストを直接書く必要はない。
+`rollout.enabled: true` にするだけで Deployment から Argo Rollouts のカナリア戦略に切り替わる。
 
 ## common-db：PostgreSQL プロビジョニングの抽象化
 
@@ -109,11 +114,21 @@ db:
     enabled: false
 ```
 
+## バージョン履歴（common-app）
+
+| バージョン | 変更内容 |
+|---|---|
+| v0.1.0 | 初期リリース。Deployment / Service / Ingress / HPA / ServiceMonitor |
+| v0.2.0 | `Rollout` テンプレート追加（Argo Rollouts カナリア対応） |
+| v0.3.0 | Service の port に `name: http` を追加（ServiceMonitor の port 解決に必要） |
+
 ## 設計上の決定事項
 
 - **Library Chart を選んだ理由**：`helm install` 単体では使えないため、テンプレートの「直接実行」を防げる。アプリ Chart を経由することで、アプリごとの設定上書きが明確になる。
 - **`_helpers.tpl` に全テンプレートを集約した理由**：アプリ Chart 側の `all.yaml` が `{{ include "common-app.all" . }}` の1行になり、テンプレートのメンテナンス箇所が Library Chart に一元化される。
 - **ServiceMonitor をデフォルト `false` にした理由**：Prometheus の `ServiceMonitor` CRD がない環境でも Chart が動作するように。
+- **Rollout / Deployment をフラグで切り替える理由**：既存の Deployment 環境に対して values の変更だけでカナリア戦略を導入できる。Argo Rollouts がない環境でも同じ Chart が動作する。
+- **Service に `name: http` を付与した理由**：ServiceMonitor の `port: http` 指定と一致させ、Prometheus が scrape ターゲットを正しく解決できるようにする。
 
 ## 関連リポジトリ
 
