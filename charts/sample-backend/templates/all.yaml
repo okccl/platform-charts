@@ -1,4 +1,8 @@
+{{- if .Values.rollout.enabled }}
+{{ include "common-app.rollout" . }}
+{{- else }}
 {{ include "common-app.deployment" . }}
+{{- end }}
 ---
 {{ include "common-app.service" . }}
 ---

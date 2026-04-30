@@ -56,3 +56,12 @@ serviceMonitor:
 # DB接続設定（common-dbと組み合わせて使用する場合のみ設定）
 db:
   name: ""
+
+# Argo Rollouts設定
+rollout:
+  enabled: false
+  canary:
+    steps:
+      - setWeight: 20
+      - pause: {}
+      - setWeight: 100
