@@ -98,7 +98,8 @@ spec:
   selector:
     app.kubernetes.io/name: {{ .Values.app.name }}
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
       targetPort: {{ .Values.containerPort }}
 {{- end }}
