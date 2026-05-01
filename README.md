@@ -17,11 +17,15 @@ Platform Engineering portfolio — Helm Library Chart リポジトリ
 | Phase 5 | Library Chart（`common-app`）による Helm テンプレートの共通化。アプリ Chart は `values.yaml` のみを管理すればよい |
 | Phase 8 | Library Chart（`common-db`）によるステートフルな PostgreSQL（CloudNativePG）のプロビジョニング抽象化 |
 | Phase 11 | `common-app` v0.2.0 で Argo Rollouts の `Rollout` リソースに対応。`rollout.enabled: true` でカナリア戦略に切り替え可能 |
+| Phase 11（番外編） | `charts/*/charts/*.tgz` を Git 管理に変更。ArgoCD の `file://` 相対参照による依存解決に対応 |
 
 ## ディレクトリ構成
 
 ```
 platform-charts/
+├── .github/
+│   └── workflows/
+│       └── update-dependencies.yaml  # library chart 変更時に依存を自動更新
 └── charts/
     ├── common-app/               # Library Chart（アプリ共通）
     │   ├── Chart.yaml            # v0.3.0
@@ -36,10 +40,15 @@ platform-charts/
     ├── sample-backend/           # common-app + common-db を使うアプリ Chart の例
     │   ├── Chart.yaml            # dependencies に common-app / common-db を宣言
     │   ├── Chart.lock
+    │   ├── charts/               # 依存 tgz（Git 管理）
     │   ├── values.yaml
     │   └── templates/
     │       └── all.yaml          # rollout.enabled フラグで Deployment / Rollout を切り替え
     └── sample-frontend/          # common-app を使うアプリ Chart の例
+        ├── Chart.yaml
+        ├── Chart.lock
+        ├── charts/               # 依存 tgz（Git 管理）
+        └── templates/
 ```
 
 ## common-app：アプリデプロイの抽象化
@@ -65,7 +74,6 @@ app:
 image:
   repository: ghcr.io/okccl/sample-backend
   tag: latest
-replicaCount: 2
 containerPort: 8000
 resources:
   requests: { cpu: 100m, memory: 128Mi }
@@ -87,6 +95,8 @@ rollout:
 ```
 
 `rollout.enabled: true` にするだけで Deployment から Argo Rollouts のカナリア戦略に切り替わる。
+
+`replicaCount` は KEDA の `minReplicaCount` に委ねるため values.yaml には記載しない。
 
 ## common-db：PostgreSQL プロビジョニングの抽象化
 
@@ -114,6 +124,19 @@ db:
     enabled: false
 ```
 
+## CI：依存の自動更新
+
+`common-app` または `common-db` の `Chart.yaml` が更新されると、GitHub Actions が全 application chart の `helm dependency update` を実行し、`charts/` ディレクトリと `Chart.lock` を自動コミットする。
+
+```yaml
+# トリガー条件
+on:
+  push:
+    paths:
+      - 'charts/common-app/Chart.yaml'
+      - 'charts/common-db/Chart.yaml'
+```
+
 ## バージョン履歴（common-app）
 
 | バージョン | 変更内容 |
@@ -129,6 +152,8 @@ db:
 - **ServiceMonitor をデフォルト `false` にした理由**：Prometheus の `ServiceMonitor` CRD がない環境でも Chart が動作するように。
 - **Rollout / Deployment をフラグで切り替える理由**：既存の Deployment 環境に対して values の変更だけでカナリア戦略を導入できる。Argo Rollouts がない環境でも同じ Chart が動作する。
 - **Service に `name: http` を付与した理由**：ServiceMonitor の `port: http` 指定と一致させ、Prometheus が scrape ターゲットを正しく解決できるようにする。
+- **`charts/*/charts/*.tgz` を Git 管理する理由**：ArgoCD は `file://` 相対参照の依存解決のために `helm dependency build` を実行しない。tgz を Git にコミットすることで ArgoCD がそのまま利用できる。library chart のバージョンアップ時は CI が自動更新する。
+- **`replicaCount` を values.yaml から削除した理由**：KEDA が replicas を管理するため、Git 側に `replicaCount` を書くと ArgoCD の selfHeal と競合して Pod 数が頻繁にリセットされる。KEDA の `minReplicaCount` を唯一の真実とし、ArgoCD の `ignoreDifferences` + `RespectIgnoreDifferences=true` と組み合わせることで競合を解消した。
 
 ## 関連リポジトリ
 
