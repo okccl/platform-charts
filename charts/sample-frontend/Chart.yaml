@@ -5,5 +5,5 @@ type: application
 version: 0.1.0
 dependencies:
   - name: common-app
-    version: "0.1.0"
+    version: "0.3.0"
     repository: "file://../common-app"
