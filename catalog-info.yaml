@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: platform-charts
+  description: Helm Library Chart（common-app / common-db）による抽象化層
+  annotations:
+    github.com/project-slug: okccl/platform-charts
+  tags:
+    - helm
+    - kubernetes
+spec:
+  type: library
+  lifecycle: production
+  owner: user:platform-admin
+  system: platform
