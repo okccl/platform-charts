@@ -72,7 +72,7 @@ platform-charts/
 app:
   name: sample-backend
 image:
-  repository: ghcr.io/ccl-labs/sample-backend
+  repository: ghcr.io/okccl/sample-backend
   tag: latest
 containerPort: 8000
 resources:
@@ -159,6 +159,6 @@ on:
 
 | リポジトリ | 役割 |
 |---|---|
-| [`platform-gitops`](https://github.com/ccl-labs/platform-gitops) | この Chart を OCI レジストリから参照して ArgoCD でデプロイ |
-| [`sample-backend`](https://github.com/ccl-labs/sample-backend) | `common-app` + `common-db` の利用例（API + PostgreSQL） |
-| [`sample-frontend`](https://github.com/ccl-labs/sample-frontend) | `common-app` の利用例（静的フロントエンド） |
+| [`platform-gitops`](https://github.com/okccl/platform-gitops) | この Chart を OCI レジストリから参照して ArgoCD でデプロイ |
+| [`sample-backend`](https://github.com/okccl/sample-backend) | `common-app` + `common-db` の利用例（API + PostgreSQL） |
+| [`sample-frontend`](https://github.com/okccl/sample-frontend) | `common-app` の利用例（静的フロントエンド） |
