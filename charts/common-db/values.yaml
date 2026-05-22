@@ -8,22 +8,22 @@ db:
   postgresVersion: 17
   # ストレージサイズ
   storageSize: 1Gi
-  # ストレージクラス（未指定の場合はデフォルト StorageClass を使用）
-  storageClassName: ""
+  # ストレージクラス（PVC削除後もデータを保持する Retain ポリシーを使用）
+  storageClassName: "local-path-retain"
   # DB初期化設定
   database: app
   owner: app
   # バックアップ設定
   backup:
-    enabled: false
-    # MinIOのエンドポイント（cluster内部DNS）
-    endpointURL: "http://minio.minio.svc.cluster.local:9000"
+    enabled: true
+    # MinIOのエンドポイント（k3d ホストからアクセス）
+    endpointURL: "http://host.k3d.internal:9000"
     bucketName: "cnpg-backup"
     # MinIO認証情報を持つSecretの名前
     secretName: "minio-backup-secret"
   # モニタリング設定
   monitoring:
-    enablePodMonitor: false
+    enablePodMonitor: true
   # リソース設定
   resources:
     requests:
