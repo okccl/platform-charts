@@ -13,6 +13,14 @@ db:
   # DB初期化設定
   database: app
   owner: app
+  # DR リストア設定（通常は false。make generate-dr-manifests が自動設定する）
+  recovery:
+    enabled: false
+    # externalClusters の name と source に対応するキー
+    source: minio-backup
+    endpointURL: "http://host.k3d.internal:9000"
+    bucketName: "cnpg-backup"
+    secretName: "minio-backup-secret"
   # バックアップ設定
   backup:
     enabled: true

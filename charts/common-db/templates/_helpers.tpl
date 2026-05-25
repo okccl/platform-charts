@@ -15,9 +15,34 @@ spec:
       - host all all 0.0.0.0/0 scram-sha-256
 
   bootstrap:
+{{- if and .Values.db.recovery .Values.db.recovery.enabled }}
+    recovery:
+      source: {{ .Values.db.recovery.source }}
+{{- else }}
     initdb:
       database: {{ .Values.db.database }}
       owner: {{ .Values.db.owner }}
+{{- end }}
+
+{{- if and .Values.db.recovery .Values.db.recovery.enabled }}
+  externalClusters:
+    - name: {{ .Values.db.recovery.source }}
+      barmanObjectStore:
+        endpointURL: {{ .Values.db.recovery.endpointURL | quote }}
+        destinationPath: s3://{{ .Values.db.recovery.bucketName }}/{{ .Values.db.name }}
+        serverName: {{ .Values.db.name }}
+        s3Credentials:
+          accessKeyId:
+            name: {{ .Values.db.recovery.secretName }}
+            key: ACCESS_KEY_ID
+          secretAccessKey:
+            name: {{ .Values.db.recovery.secretName }}
+            key: ACCESS_SECRET_KEY
+        wal:
+          compression: gzip
+        data:
+          compression: gzip
+{{- end }}
 
   storage:
     size: {{ .Values.db.storageSize }}
