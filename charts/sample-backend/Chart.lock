@@ -1,9 +1,9 @@
 dependencies:
 - name: common-app
   repository: file://../common-app
-  version: 0.3.0
+  version: 0.3.1
 - name: common-db
   repository: file://../common-db
   version: 0.1.0
-digest: sha256:5938ace13fa28e976da4063ce057402d6394e2ddccd031e7b370989a24bc7116
-generated: "2026-05-01T07:44:53.278230682+09:00"
+digest: sha256:56f06cf5b41cb0fe3056cf0cfdff5b31c9482f7440e72880f9f866b64ae5c34e
+generated: "2026-05-23T18:39:56.844388235+09:00"
