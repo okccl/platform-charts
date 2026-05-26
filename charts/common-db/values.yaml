@@ -21,6 +21,9 @@ db:
     endpointURL: "http://host.k3d.internal:9000"
     bucketName: "cnpg-backup"
     secretName: "minio-backup-secret"
+    # 旧バックアップの参照先 serverName（空 = db.name をデフォルトとして使用）
+    # generate-dr-manifests が自動設定する
+    serverName: ""
   # バックアップ設定
   backup:
     enabled: true
@@ -29,6 +32,9 @@ db:
     bucketName: "cnpg-backup"
     # MinIO認証情報を持つSecretの名前
     secretName: "minio-backup-secret"
+    # WAL 書き込み先 serverName（空 = db.name をデフォルトとして使用）
+    # generate-dr-manifests が DR 時に {db.name}-{YYYYMMDD} に設定する
+    serverName: ""
   # モニタリング設定
   monitoring:
     enablePodMonitor: true

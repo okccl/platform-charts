@@ -30,7 +30,7 @@ spec:
       barmanObjectStore:
         endpointURL: {{ .Values.db.recovery.endpointURL | quote }}
         destinationPath: s3://{{ .Values.db.recovery.bucketName }}/{{ .Values.db.name }}
-        serverName: {{ .Values.db.name }}
+        serverName: {{ .Values.db.recovery.serverName | default .Values.db.name }}
         s3Credentials:
           accessKeyId:
             name: {{ .Values.db.recovery.secretName }}
@@ -58,6 +58,7 @@ spec:
     barmanObjectStore:
       endpointURL: {{ .Values.db.backup.endpointURL }}
       destinationPath: s3://{{ .Values.db.backup.bucketName }}/{{ .Values.db.name }}
+      serverName: {{ .Values.db.backup.serverName | default .Values.db.name }}
       s3Credentials:
         accessKeyId:
           name: {{ .Values.db.backup.secretName }}
