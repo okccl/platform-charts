@@ -10,14 +10,14 @@ Platform Engineering portfolio — Helm Library Chart リポジトリ
 「何を渡せばデプロイできるか」を `values.yaml` だけに集約することで、  
 チームごとの Deployment / Ingress のばらつきをなくし、プラットフォームとしての一貫性を保つ。
 
-## このリポジトリが示すもの
+## 提供する機能
 
-| Phase | 内容 |
-|-------|------|
-| Phase 5 | Library Chart（`common-app`）による Helm テンプレートの共通化。アプリ Chart は `values.yaml` のみを管理すればよい |
-| Phase 8 | Library Chart（`common-db`）によるステートフルな PostgreSQL（CloudNativePG）のプロビジョニング抽象化 |
-| Phase 11 | `common-app` v0.2.0 で Argo Rollouts の `Rollout` リソースに対応。`rollout.enabled: true` でカナリア戦略に切り替え可能 |
-| Phase 11（番外編） | `charts/*/charts/*.tgz` を Git 管理に変更。ArgoCD の `file://` 相対参照による依存解決に対応 |
+| 機能 | 内容 |
+|---|---|
+| `common-app` | Deployment / Service / Ingress / HPA / ServiceMonitor を `values.yaml` だけで宣言できる共通テンプレート |
+| `common-db` | CloudNativePG クラスタを数行の `values.yaml` で宣言（シングル / HA / MinIO バックアップ対応） |
+| Argo Rollouts 対応 | `rollout.enabled: true` の1行でカナリア戦略に切り替え可能。Deployment との互換性を維持 |
+| ArgoCD 依存解決 | `charts/*.tgz` を Git 管理し、ArgoCD の `file://` 相対参照による依存解決に対応 |
 
 ## ディレクトリ構成
 
